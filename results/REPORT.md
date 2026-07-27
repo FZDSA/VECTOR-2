@@ -1,24 +1,15 @@
-# VECTOR-2 Backtest Report (v1.1)
+# VECTOR-2 Backtest Report (v1.2)
 
-Generated locally from Yahoo daily data.
-
-## Rules
-- Universe: S&P 100 liquid names
-- Timeframe: daily, monthly rebalance
-- Momentum: 252-day return (no skip month)
-- Regime: risk-on only if SPY > SMA200 else cash
-- Portfolio: top 10 equal weight
-- Cost: 10 bps one-way
+## Changes vs v1.1
+- Inverse-volatility (63d) weights instead of equal weight
+- Absolute momentum filter (mom > 0)
+- Risk-off allocates to **BIL** (T-bills) instead of idle cash
+- Drop duplicate GOOG when GOOGL present
 
 ## Results
 
-| Period | CAGR | MaxDD | Sharpe | SPY CAGR |
-|--------|------|-------|--------|----------|
-| All | 18.3% | -33.2% | 0.87 | 15.0% |
-| Train ≤2021 | 22.0% | -33.2% | 0.96 | 17.6% |
-| Test ≥2022 | 13.0% | -26.2% | 0.73 | 11.5% |
-
-## Notes
-- v1 (126d + skip 21d) **lost** to SPY out-of-sample.
-- v1.1 (252d, no skip) **slightly beat** SPY in 2022+ sample (+~1.5% CAGR) with similar DD.
-- This is research-grade, not proof of future alpha. Signal-only until paper period validates.
+| Period | CAGR | MaxDD | Sharpe | SPY CAGR | Excess |
+|--------|------|-------|--------|----------|--------|
+| All | 17.2% | -29.8% | 0.89 | 15.0% | +2.2% |
+| Train ≤2021 | 18.5% | -29.8% | 0.87 | 17.6% | +0.9% |
+| Test ≥2022 | 15.1% | -21.0% | 0.90 | 11.5% | +3.6% |

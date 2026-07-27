@@ -11,12 +11,12 @@ Bot **#2** in the Investing fleet — cross-sectional **momentum** with a **SPY 
 | Data | Yahoo Finance (`yfinance`) for research |
 | Alerts | Same Telegram bot as TRINITY-1, prefixed `#2 VECTOR-2` |
 
-## Strategy (v1)
+## Strategy (v1.2)
 
 1. Risk-on only when `SPY > SMA200`
 2. Rank S&P 100 by 126-day return (skip most recent 21 days)
-3. Hold top 10 equal-weight
-4. If risk-off → 100% cash
+3. Hold top 10 with **inverse-vol** weights (and mom > 0)
+4. If risk-off → **BIL** (T-bill ETF)
 5. Costs: 10 bps one-way per turnover
 
 ## Commands
