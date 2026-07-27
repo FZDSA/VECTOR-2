@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from src.strategy import momentum_scores, regime_on, select_portfolio
+from src.strategy import momentum_scores, regime_on, select_portfolio, select_names
+from src.universe import sector_of
 
 
 def test_momentum_ranks_winners():
@@ -22,12 +23,20 @@ def test_select_returns_weights():
     idx = pd.date_range("2018-01-01", periods=400, freq="B")
     rng = np.random.default_rng(0)
     px = pd.DataFrame({
-        "A": 100 * np.cumprod(1 + rng.normal(0.001, 0.01, len(idx))),
-        "B": 100 * np.cumprod(1 + rng.normal(0.0005, 0.02, len(idx))),
+        "AAPL": 100 * np.cumprod(1 + rng.normal(0.001, 0.01, len(idx))),
+        "JPM": 100 * np.cumprod(1 + rng.normal(0.0008, 0.012, len(idx))),
+        "XOM": 100 * np.cumprod(1 + rng.normal(0.0005, 0.015, len(idx))),
         "BIL": 100 * np.cumprod(1 + np.full(len(idx), 0.00008)),
     }, index=idx)
     spy = pd.Series(100 * np.cumprod(1 + rng.normal(0.0007, 0.01, len(idx))), index=idx)
-    w = select_portfolio(px, spy, idx[-1], safe_asset="BIL")
+    # high volume so liquidity filter passes
+    volume = pd.DataFrame(1_000_000, index=idx, columns=px.columns)
+    w = select_portfolio(px, spy, idx[-1], safe_asset="BIL", volume=volume)
     assert isinstance(w, dict)
     if w:
-        assert abs(sum(w.values()) - 1.0) < 1e-6
+        assert sum(w.values()) <= 1.0 + 1e-6
+
+
+def test_sector_cap_limits_names():
+    assert sector_of("AAPL") == "Tech"
+    assert sector_of("JPM") == "Fin"

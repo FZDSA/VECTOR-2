@@ -64,9 +64,16 @@ def summarize(equity: pd.Series, benchmark: pd.Series) -> dict:
     }
 
 
-def run_backtest(prices: pd.DataFrame, spy: pd.Series, safe_asset: str | None = "BIL") -> BacktestResult:
+def run_backtest(
+    prices: pd.DataFrame,
+    spy: pd.Series,
+    safe_asset: str | None = "BIL",
+    volume: pd.DataFrame | None = None,
+) -> BacktestResult:
     prices = prices.dropna(how="all")
     spy = spy.reindex(prices.index).ffill()
+    if volume is not None:
+        volume = volume.reindex(index=prices.index).reindex(columns=prices.columns).fillna(0)
     rebalance_days = monthly_rebalance_dates(prices.index)
     min_start = prices.index[min(len(prices) - 1, 252)]
     rebalance_days = rebalance_days[rebalance_days >= min_start]
@@ -83,7 +90,9 @@ def run_backtest(prices: pd.DataFrame, spy: pd.Series, safe_asset: str | None = 
 
     for i, dt in enumerate(all_days):
         if dt in reb_set:
-            target_w = select_portfolio(prices, spy, dt, safe_asset=safe_asset)
+            target_w = select_portfolio(
+                prices, spy, dt, safe_asset=safe_asset, volume=volume
+            )
             keys = set(current_weights) | set(target_w)
             trade_cost = cost * sum(abs(target_w.get(k, 0) - current_weights.get(k, 0)) for k in keys)
             value *= (1.0 - trade_cost)
