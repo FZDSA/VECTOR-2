@@ -7,6 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def telegram_reports_enabled() -> bool:
+    """Group explanations off by default; set TELEGRAM_REPORTS=1 to re-enable."""
+    return os.getenv("TELEGRAM_REPORTS", "0").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def esc(text) -> str:
     return html.escape(str(text), quote=False)
 
@@ -17,6 +22,10 @@ class TelegramBot:
         self.chat_id = os.getenv("TELEGRAM_CHAT_ID")
 
     def send_message(self, message: str, *, as_html: bool = True) -> bool:
+        if not telegram_reports_enabled():
+            print("Telegram reports disabled (TELEGRAM_REPORTS≠1). Local log only.")
+            print(message)
+            return False
         if not self.token or not self.chat_id:
             print("Telegram keys missing — print only:")
             print(message)

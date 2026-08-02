@@ -1,4 +1,4 @@
-name: VECTOR-2 Daily Signal
+name: HORIZON Daily Signal
 
 on:
   schedule:
@@ -19,6 +19,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run signal
         env:
+          # Still compute signal on GitHub; no group explanations.
+          TELEGRAM_REPORTS: "0"
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main_signal.py
